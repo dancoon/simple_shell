@@ -133,9 +133,8 @@ drwxrwxr-x  8 vagrant vagrant  4096 Jul 19 22:34 .git
 At this time, there are no known bugs.
 
 ## Authors
-Lewis Safari | [GitHub](https://github.com/safarilewis)
-
-Mary Muriuki | [GitHub](https://github.com/MaryMuriuki)
+Dancoon
+Melane
 
 ## License
 This is an open source project and you are free to download it.
