@@ -77,4 +77,7 @@ void print_error(vars_t *vars, char *msg);
 void _puts2(char *str);
 char *_uitoa(unsigned int count);
 
+char *error_get_alias(char **args);
+void aux_help_alias(void);
+
 #endif /* _SHELL_H_ */
