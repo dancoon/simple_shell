@@ -1,105 +1,141 @@
-# 0x16. C - Simple Shell
+# <a href="url"><img src="https://cdn3.iconfinder.com/data/icons/egg/500/Egg_food_cracked_whipped-512.png" align="middle" width="100" height="100"></a> simple_shell
 
-```sh
-     _____       _                     __    _____ _          _ _ 
-    / ____|     | |                   / _|  / ____| |        | | |
-   | |  __  __ _| |_ ___  ___    ___ | |_  | (___ | |__   ___| | |
-   | | |_ |/ _` | __/ _ \/ __|  / _ \|  _|  \___ \| '_ \ / _ \ | |
-   | |__| | (_| | ||  __/\__ \ | (_) | |    ____) | | | |  __/ | |
-    \_____|\__,_|\__\___||___/  \___/|_|   |_____/|_| |_|\___|_|_|
+
+## Table of Contents
+* [Description](#description)
+* [File Structure](#file-structure)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Example of Use](#example-of-use)
+* [Bugs](#bugs)
+* [Authors](#authors)
+* [License](#license)
+
+## Description
+simple_shell is a command line interpreter, or shell, in the tradition of the first Unix shell written by Ken Thompson in 1971. This shell is intentionally minimalistic, yet includes the basic functionality of a traditional Unix-like command line user interface. 
+Standard functions and system calls employed in simple_shell include:
+   `access, execve, exit, fork, free, fstat, getline, malloc, perror, signal, stat, wait, write.`
+
+## File Structure
+* [AUTHORS](AUTHORS) - List of contributors to this repository
+* [man_1_simple_shell](man_1_simple_shell) - Manual page for the simple_shell
+* [shell.h](shell.h) - program header file
+* [builtins.c](builtins.c) - major builtin functions
+  * `check_for_builtins` - checks to see if the user's command matches a builtin
+  * `new_exit` - exits the shell with the option of a specified status
+  * `_env` - prints the shell's environment variables to the standard output
+  * `new_setenv` - initializes a new environment variable, or modifies an existing one
+  * `new_unsetenv` - removes an environment variable
+* [builtins2.c](builtins2.c) - helper functions for the builtins
+  * `add_key` - creates a new environment variable
+  * `find_key` - finds an environment variable in the environment array
+  * `add_value` - creates a new environment variable string
+  * `_atoi` - converts a string into a non-negative integer
+* [environment.c](environment.c) - functions related to the environment
+  * `make_env` - creates the shell's environment from the parent process
+  * `free_env` - frees the shell's environment
+* [errors.c](errors.c) - functions related to printing errors
+  * `print_error` - prints an error message to the standard error
+  * `_puts2` - prints a string to the standard error
+  * `_uitoa` - converts an unsigned integer to a string
+* [memory_allocation.c](memory_allocation.c) - memory allocation functions
+  * `_realloc` - a custom realloc function for arrays of pointers
+* [new_strtok.c](new_strtok.c) - custom strtok and helper functions
+  * `check_match` - checks if a character matches any in a string
+  * `new_strtok` - a custom strtok for the shell
+* [path.c](path.c) - functions related to executing commands
+  * `path_execute` - executes a command in the PATH
+  * `find_path` - finds the PATH environment variable
+  * `check_for_path` - checks if the command is in the PATH
+  * `execute_cwd` - executes a command with an absolute path
+  * `check_for_dir` - checks if the command contains an absolute path
+* [simple_shell.c](simple_shell.c) - essential functions to the shell
+  * `main` - the main function of the program
+  * `sig_handler` - handles SIGINT
+* [strfunc.c](strfunc.c) - functions related to string manipulation
+  * `_puts` - writes a string to standart output
+  * `_strdup` - duplicates a string
+  * `_strcmpr` - compares two strings
+  * `_strcat` - concatenates two strings with a `/` in the middle
+  * `_strlen` - calculates the length of a string
+* [tokenize.c](tokenize.c) - tokenizing function
+  * `tokenize` - creates an array of tokens from a buffer with a specified delimiter
+
+## Requirements
+
+simple_shell is designed to run in the `Ubuntu 14.04 LTS` linux environment and to be compiled using the GNU compiler collection v. `gcc 4.8.4` with flags`-Wall, -Werror, -Wextra, and -pedantic.`
+
+## Installation
+
+   - Clone this repository: `git clone "https://github.com/safarilewis/simple_shell.git"`
+   - Change directories into the repository: `cd simple_shell`
+   - Compile: `gcc -Wall -Werror -Wextra -pedantic *.c -o hsh`
+   - Run the shell in interactive mode: `./hsh`
+   - Or run the shell in non-interactive mode: example `echo "pwd" | ./hsh`
+
+## Usage
+
+The simple_shell is designed to execute commands in a similar manner to sh, however with more limited functionality. The development of this shell is ongoing. The below features will be checked as they become available (see man page for complete information on usage):
+
+### Features
+- [x] uses the PATH
+- [x] implements builtins
+- [x] handles command line arguments
+- [x] custom strtok function
+- [x] uses exit status
+- [x] shell continues upon Crtl+C (**^C**)
+- [x] handles comments (#)
+- [x] handles **;**
+- [ ] custom getline type function
+- [ ] handles **&&** and **||**
+- [ ] aliases
+- [ ] variable replacement
+
+
+### Builtins
+
+- [x] exit
+- [x] env
+- [x] setenv
+- [x] unsetenv
+- [ ] cd
+- [ ] help
+- [ ] history
+
+## Example of Use
+Run the executable in your terminal after compiling:
 ```
-
-<details>
-<summary>The Gates of Shell by Spencer Cheng, featuring Julien Barbier</summary>
-<img src="https://user-images.githubusercontent.com/29776892/129798799-6f730688-8728-49ed-b01b-13bec0fa2896.jpeg">
-</details>
-
-## Resource
-
-- [Unix shell](https://en.wikipedia.org/wiki/Unix_shell)
-- [Thompson shell](https://en.wikipedia.org/wiki/Thompson_shell)
-- [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson)
-- [Everything you need to know to start coding your own shell](https://www.notion.so/C-Programming-f13cdb9661db464f8ea326c5a2654e8e)
-
----
-
-<details>
-<summary>List of allowed functions and system calls</summary>
-
-+ `access` (man 2 access)
-+ `chdir` (man 2 chdir)
-+ `close` (man 2 close)
-+ `closedir` (man 3 closedir)
-+ `execve` (man 2 execve)
-+ `exit` (man 3 exit)
-+ `\_exit` (man 2 \_exit)
-+ `fflush` (man 3 fflush)
-+ `fork` (man 2 fork)
-+ `free`(man 3 free)
-+ `getcwd` (man 3 getcwd)
-+ `getline` (man 3 getline)
-+ `getpid` (man 2 getpid)
-+ `isatty` (man 3 isatty)
-+ `kill` (man 2 kill)
-+ `malloc` (man 3 malloc)
-+ `open` (man 2 open)
-+ `opendir` (man 3 opendir)
-+ `perror` (man 3 perror)
-+ `read` (man 2 read)
-+ `readdir` (man 3 readdir)
-+ `signal` (man 2 signal)
-+ `stat` (\_\_xstat) (man 2 stat)
-+ `lstat` (\_\_lxstat) (man 2 lstat)
-+ `fstat` (\_\_fxstat) (man 2 fstat)
-+ `strtok` (man 3 strtok)
-+ `wait` (man 2 wait)
-+ `waitpid` (man 2 waitpid)
-+ `wait3` (man 2 wait3)
-+ `wait4` (man 2 wait4)
-+ `write` (man 2 write)
-
-</details>
-
-<details>
-<summary>The shell will be compiled this way:</summary>
-<pre>$ gcc -Wall -Werror -Wextra -pedantic -std=gnu89 \*.c -o hsh</pre>
-</details>
-
-## Output
-
-- Unless specified otherwise, your program must have the exact same output as `sh` (`/bin/sh`) as well as the exact same error output.
-- The only difference is when you print an error, the name of the program must be equivalent to your `argv[0]` (see below)
-
-<details>
-     <summary>Example of error with sh:</summary>
-<pre>$ echo "qwerty" | /bin/sh<br>/bin/sh: 1: qwerty: not found<br>$ echo "qwerty" | /bin/../bin/sh<br>/bin/../bin/sh: 1: qwerty: not found<br>$</pre>
-</details>
-
-<details>
-<summary>Same error with your program hsh:</summary>
-<pre>$ echo "qwerty" | ./hsh<br>./hsh: 1: qwerty: not found<br>$ echo "qwerty" | ./././hsh<br>./././hsh: 1: qwerty: not found<br>$</pre>
-</details>
-
-## Testing
-
-<details>
-<summary>The shell should work like this in interactive mode:</summary>
-<pre>$ ./hsh<br>($) /bin/ls<br>hsh main.c shell.c<br>($)<br>($) exit<br>$</pre>
-</details>
-
-<details>
-<summary>But also in non-interactive mode:</summary>
-<pre>$ echo "/bin/ls" | ./hsh<br>hsh main.c shell.c test\_ls\_2<br>$<br>$ cat test\_ls\_2<br>/bin/ls<br>/bin/ls<br>$<br>$ cat test\_ls\_2 | ./hsh<br>hsh main.c shell.c test\_ls\_2<br>hsh main.c shell.c test\_ls\_2<br>$</pre>
-</details>
-
-## Features
-
-- To add as we progress
-
-## Builtins
-
-- To add as we progress
+$ ./hsh
+$ # This is our rendition of the shell
+$ ls -al
+total 100
+drwxrwxr-x  3 vagrant vagrant  4096 Jul 19 22:49 .
+drwxr-xr-x 14 vagrant vagrant  4096 Jul 17 22:37 ..
+-rw-rw-r--  1 vagrant vagrant   144 Jul 19 17:16 AUTHORS
+-rw-rw-r--  1 vagrant vagrant  2367 Jul 19 22:33 builtins2.c
+-rw-rw-r--  1 vagrant vagrant  2764 Jul 19 22:14 builtins.c
+-rw-rw-r--  1 vagrant vagrant   710 Jul 16 01:03 environment.c
+-rw-rw-r--  1 vagrant vagrant  1217 Jul 16 03:24 errors.c
+drwxrwxr-x  8 vagrant vagrant  4096 Jul 19 22:34 .git
+-rwxrwxr-x  1 vagrant vagrant 32287 Jul 19 22:34 hsh
+-rw-rw-r--  1 vagrant vagrant  1792 Jul 19 22:12 man_1_simple_shell
+-rw-rw-r--  1 vagrant vagrant   484 Jul 15 20:09 memory_allocation.c
+-rw-rw-r--  1 vagrant vagrant  1273 Jul 18 21:00 new_strtok.c
+-rw-rw-r--  1 vagrant vagrant  3427 Jul 19 22:06 path.c
+-rw-rw-r--  1 vagrant vagrant  2347 Jul 19 22:49 README.md
+-rw-rw-r--  1 vagrant vagrant  1769 Jul 19 22:04 shell.h
+-rw-rw-r--  1 vagrant vagrant  1480 Jul 18 21:15 simple_shell.c
+-rw-rw-r--  1 vagrant vagrant  2111 Jul 16 01:10 strfunc.c
+-rw-rw-r--  1 vagrant vagrant   719 Jul 19 21:46 tokenize.c
+```
+## Bugs
+At this time, there are no known bugs.
 
 ## Authors
+Lewis Safari | [GitHub](https://github.com/safarilewis)
 
-- iAmG-r00t 👾
+Mary Muriuki | [GitHub](https://github.com/MaryMuriuki)
+
+## License
+This is an open source project and you are free to download it.
